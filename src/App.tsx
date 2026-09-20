@@ -19,6 +19,7 @@ import { HomeRecommendView } from './components/HomeRecommendView';
 import { VipView } from './components/VipView';
 import { EditProfileModal } from './components/EditProfileModal';
 import { OutfitModal } from './components/OutfitModal';
+import { LiarDiceGameModal } from './components/LiarDiceGameModal';
 import { loadAllIntimacies, saveIntimacy, getIntimacyData, addDailyChatIntimacy, AddChatIntimacyResult } from './utils/intimacy';
 import { ROLE_MEDIA_MAP } from './data/rolePortraits';
 import { DEFAULT_ROLES } from './data/rolesData';
@@ -136,6 +137,7 @@ export default function App() {
   const [showRankingModal, setShowRankingModal] = useState(false);
   const [showTheaterModal, setShowTheaterModal] = useState(false);
   const [showOutfitModal, setShowOutfitModal] = useState(false);
+  const [showLiarDiceModal, setShowLiarDiceModal] = useState(false);
   const [detailModalTab, setDetailModalTab] = useState<'about' | 'story' | 'theater'>('about');
   const [homeTopTab, setHomeTopTab] = useState<'recommend' | 'theater' | 'original' | 'game'>('recommend');
   const [hasUnreadMoments, setHasUnreadMoments] = useState<boolean>(() => {
@@ -1355,6 +1357,8 @@ export default function App() {
                     setShowTheaterModal(true);
                   } else if (item.id === 'outfits') {
                     setShowOutfitModal(true);
+                  } else if (item.id === 'games') {
+                    setShowLiarDiceModal(true);
                   } else {
                     showToast(`即将开启 ${item.label} 功能`);
                   }
@@ -3065,6 +3069,13 @@ export default function App() {
         roles={roles}
         onClose={() => setShowOutfitModal(false)}
         onShowToast={showToast}
+      />
+
+      <LiarDiceGameModal
+        isOpen={showLiarDiceModal}
+        onClose={() => setShowLiarDiceModal(false)}
+        userProfile={userProfile}
+        roles={roles}
       />
     </PhoneFrame>
   );
