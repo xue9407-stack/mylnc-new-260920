@@ -29,6 +29,7 @@ import {
   CreditCard
 } from 'lucide-react';
 import { RoleAvatar } from './RoleAvatar';
+import { speakRoleDialogue } from '../utils/ttsHelper';
 import {
   getIntimacyData,
   getIntimacyPercent,
@@ -192,22 +193,21 @@ export const ChatView: React.FC<ChatViewProps> = ({
       return;
     }
 
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(msg.text);
-    utterance.lang = 'zh-CN';
-    utterance.rate = 1.0;
-    utterance.pitch = 1.0;
+    const success = speakRoleDialogue({
+      text: msg.text,
+      roleName: msg.sender === 'user' ? '用户' : role.name,
+      roleTags: msg.sender === 'user' ? ['用户'] : role.tags,
+      roleTitle: msg.sender === 'user' ? '你' : role.title,
+      onStart: () => setSpeakingMsgId(msg.id),
+      onEnd: () => setSpeakingMsgId(null),
+      onError: () => setSpeakingMsgId(null),
+    });
 
-    utterance.onend = () => {
-      setSpeakingMsgId(null);
-    };
-    utterance.onerror = () => {
-      setSpeakingMsgId(null);
-    };
-
-    setSpeakingMsgId(msg.id);
-    window.speechSynthesis.speak(utterance);
-    onShowToast(`🔊 正在为【${msg.sender === 'user' ? '你' : role.name}】朗读语音...`);
+    if (success) {
+      onShowToast(`🔊 正在为【${msg.sender === 'user' ? '你' : role.name}】朗读原声语音...`);
+    } else {
+      onShowToast('语音朗读失败');
+    }
   };
 
   // Copy Message Text

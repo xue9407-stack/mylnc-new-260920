@@ -57,6 +57,7 @@ interface DetailModalProps {
   onUpdateIntimacy?: (added: number) => void;
   onOpenRecharge?: () => void;
   onDeductMoney?: (amount: number) => boolean;
+  initialTab?: 'about' | 'story' | 'theater';
 }
 
 export const DetailModal: React.FC<DetailModalProps> = ({
@@ -81,8 +82,9 @@ export const DetailModal: React.FC<DetailModalProps> = ({
   onUpdateIntimacy,
   onOpenRecharge,
   onDeductMoney,
+  initialTab = 'about',
 }) => {
-  const [activeTab, setActiveTab] = useState<'about' | 'story' | 'theater'>('about');
+  const [activeTab, setActiveTab] = useState<'about' | 'story' | 'theater'>(initialTab);
   const [showFullPortrait, setShowFullPortrait] = useState(false);
   const [showIntimacyModal, setShowIntimacyModal] = useState(false);
   const [imgError, setImgError] = useState(false);
@@ -109,6 +111,12 @@ export const DetailModal: React.FC<DetailModalProps> = ({
       setTheaters(getRoleTheaters(role.id));
     }
   }, [role?.id]);
+
+  useEffect(() => {
+    if (isOpen) {
+      setActiveTab(initialTab);
+    }
+  }, [isOpen, initialTab, role?.id]);
 
   if (!isOpen || !role) return null;
 

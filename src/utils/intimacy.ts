@@ -85,28 +85,44 @@ export function getIntimacyPercent(points: number): number {
 const STORAGE_KEY = 'role_intimacies_v1';
 
 export function loadAllIntimacies(): Record<string, number> {
+  const defaultValues = {
+    lujingchen: 458,
+    linxiaorou: 1385,
+    linmubai: 576,
+    gubeichen: 250,
+    guyebai: 331,
+    guyanchuan: 180,
+    linxiaoman: 286,
+    shenqinghuan: 547,
+    tangtang: 428,
+    linzhixia: 925,
+    guwanqing: 2413,
+  };
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
-      // Provide lively initial values for default characters
-      return {
-        lujingchen: 145, // Lv.2
-        linxiaorou: 320, // Lv.3
-        linmubai: 80,    // Lv.1
-        gubeichen: 50,   // Lv.1
-        guyebai: 110,    // Lv.2
-        guyanchuan: 30,  // Lv.1
-        linxiaoman: 95,  // Lv.1
-        shenqinghuan: 210, // Lv.2
-        tangtang: 160,   // Lv.2
-        linzhixia: 280,  // Lv.2
-        guwanqing: 190,  // Lv.2
-      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultValues));
+      return defaultValues;
     }
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === 'object' && (!parsed.guwanqing || parsed.guwanqing < 1000)) {
+      const migrated = { ...defaultValues, ...parsed };
+      migrated.guwanqing = Math.max(migrated.guwanqing || 0, 2413);
+      migrated.linxiaorou = Math.max(migrated.linxiaorou || 0, 1385);
+      migrated.linzhixia = Math.max(migrated.linzhixia || 0, 925);
+      migrated.linmubai = Math.max(migrated.linmubai || 0, 576);
+      migrated.shenqinghuan = Math.max(migrated.shenqinghuan || 0, 547);
+      migrated.lujingchen = Math.max(migrated.lujingchen || 0, 458);
+      migrated.tangtang = Math.max(migrated.tangtang || 0, 428);
+      migrated.guyebai = Math.max(migrated.guyebai || 0, 331);
+      migrated.linxiaoman = Math.max(migrated.linxiaoman || 0, 286);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
+      return migrated;
+    }
+    return parsed;
   } catch (e) {
     console.error('Failed to load intimacies:', e);
-    return {};
+    return defaultValues;
   }
 }
 

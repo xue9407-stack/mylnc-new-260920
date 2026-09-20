@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, Plus, Check, Play, Sparkles, Volume2 } from 'lucide-react';
 import { Role } from '../types';
+import { speakRoleDialogue } from '../utils/ttsHelper';
 
 interface HomeRecommendViewProps {
   roles: Role[];
@@ -139,44 +140,21 @@ export const HomeRecommendView: React.FC<HomeRecommendViewProps> = ({
       ? currentRole.topics[0]
       : '(看你向这边走来，微微一笑)... 同学，想知道时间？';
 
-    // Filter out bracketed non-verbal actions for clean reading
-    const cleanSpeechText = rawQuote.replace(/\([^)]*\)|（[^）]*）/g, '').trim() || rawQuote;
+    const success = speakRoleDialogue({
+      text: rawQuote,
+      roleName: currentRole.name,
+      roleTags: currentRole.tags,
+      roleTitle: currentRole.title,
+      onStart: () => setIsPlayingVoice(true),
+      onEnd: () => setIsPlayingVoice(false),
+      onError: () => setIsPlayingVoice(false),
+    });
 
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(cleanSpeechText);
-    utterance.lang = 'zh-CN';
-
-    // Tailor pitch based on character personality tags
-    const tagsStr = (currentRole.tags || []).join(' ') + ' ' + (currentRole.title || '');
-    const isMale = /霸总|男神|豪门|高冷|偏执|学长|大将军|剑客|总裁|学弟/.test(tagsStr);
-    const isFemale = /猫娘|少女|学姐|甜妹|师姐|娇妻|傲娇|千金/.test(tagsStr);
-
-    if (isFemale) {
-      utterance.pitch = 1.25;
-      utterance.rate = 1.0;
-    } else if (isMale) {
-      utterance.pitch = 0.82;
-      utterance.rate = 0.92;
+    if (success) {
+      onShowToast(`🔊 正在原声朗读【${currentRole.name}】的情感开场台词...`);
     } else {
-      utterance.pitch = 1.0;
-      utterance.rate = 1.0;
+      onShowToast('语音朗读失败');
     }
-
-    utterance.onstart = () => {
-      setIsPlayingVoice(true);
-    };
-
-    utterance.onend = () => {
-      setIsPlayingVoice(false);
-    };
-
-    utterance.onerror = () => {
-      setIsPlayingVoice(false);
-    };
-
-    setIsPlayingVoice(true);
-    window.speechSynthesis.speak(utterance);
-    onShowToast(`🔊 正在原声朗读【${currentRole.name}】开场台词...`);
   };
 
   // Extract avatar / portrait
