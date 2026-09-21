@@ -96,28 +96,28 @@ export function resolveSceneChoices(
   if (Array.isArray(rawChoices) && rawChoices.length > 0) {
     return rawChoices.map((c: any) => {
       const rawText = typeof c === 'string' ? c : (c.text || '做出回应');
-      const text = rawText.startsWith('◇') ? rawText : `◇ ${rawText}`;
+      const text = rawText.replace(/^◇\s*/, '');
       return {
         text,
         intimacyGain: typeof c === 'object' && c.intimacyGain ? c.intimacyGain : 10,
-        toastMsg: typeof c === 'object' && c.toastMsg ? c.toastMsg : `选择：${rawText.slice(0, 10)}...`
+        toastMsg: typeof c === 'object' && c.toastMsg ? c.toastMsg : `选择：${text.slice(0, 10)}...`
       };
     });
   }
 
   return [
     {
-      text: '◇ “陆总，我是来送深夜咖啡的……”',
+      text: '“陆总，我是来送深夜咖啡的……”',
       intimacyGain: 10,
       toastMsg: '送上咖啡，好感度 +10'
     },
     {
-      text: '◇ “如果我说……我是想见你呢？”',
+      text: '“如果我说……我是想见你呢？”',
       intimacyGain: 20,
       toastMsg: '心动告白，好感度 +20'
     },
     {
-      text: '◇ 默默把整理好的急件放在他桌上',
+      text: '默默把整理好的急件放在他桌上',
       intimacyGain: 15,
       toastMsg: '默默关怀，好感度 +15'
     }

@@ -191,12 +191,6 @@ export const TheaterPlayerModal: React.FC<TheaterPlayerModalProps> = ({
           <div className="flex-1 flex flex-col justify-between p-6 relative z-20 text-center">
             <div className="flex-1 flex flex-col justify-center items-center text-center px-2 z-10 my-auto">
               <ArtisticTheaterTitle title={theater.title} />
-
-              {theater.id === 'theater_school_bully' && (
-                <p className="mt-2 text-[10px] text-white/90 drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)] font-bold tracking-[0.1em] max-w-[280px] mx-auto bg-black/30 py-1.5 px-3 rounded-full border border-white/5 backdrop-blur-xs">
-                  前世他害我惨死，今生我嫁给他弟。
-                </p>
-              )}
             </div>
 
             {/* Bottom Actions: 收藏 & 进入 */}
@@ -242,20 +236,20 @@ export const TheaterPlayerModal: React.FC<TheaterPlayerModalProps> = ({
               <button
                 type="button"
                 onClick={() => setShowCatalogModal(true)}
-                className="w-10 h-10 rounded-full bg-[#e2d5cb]/25 hover:bg-[#e2d5cb]/40 border border-[#e2d5cb]/30 backdrop-blur-md flex items-center justify-center text-[#f3ece7] font-bold text-xs shadow-lg transition active:scale-90 cursor-pointer"
+                className="w-10 h-10 rounded-full bg-[#e2d5cb]/25 hover:bg-[#e2d5cb]/40 border border-[#e2d5cb]/30 backdrop-blur-md flex items-center justify-center text-[#f3ece7] shadow-lg transition active:scale-90 cursor-pointer"
                 title="剧场章节目录"
               >
-                目
+                <BookOpen size={16} />
               </button>
 
               {/* AI Settings Button */}
               <button
                 type="button"
                 onClick={() => setShowSettingsModal(true)}
-                className="w-10 h-10 rounded-full bg-[#e2d5cb]/25 hover:bg-[#e2d5cb]/40 border border-[#e2d5cb]/30 backdrop-blur-md flex items-center justify-center text-[#f3ece7] font-bold shadow-lg transition active:scale-90 cursor-pointer"
+                className="w-10 h-10 rounded-full bg-[#e2d5cb]/25 hover:bg-[#e2d5cb]/40 border border-[#e2d5cb]/30 backdrop-blur-md flex items-center justify-center text-[#f3ece7] shadow-lg transition active:scale-90 cursor-pointer"
                 title="AI 导演设置"
               >
-                ✦
+                <Sparkles size={16} className="text-amber-200 animate-pulse" />
               </button>
 
               {/* Replay Button */}
@@ -370,19 +364,25 @@ export const TheaterPlayerModal: React.FC<TheaterPlayerModalProps> = ({
 
                 {/* Interactive Choice Options */}
                 <div className="space-y-3">
-                  {resolveSceneChoices(currentScene.choices, role.name).map((opt, i) => (
-                    <button
-                      key={i}
-                      onClick={() => {
-                        onShowToast(opt.toastMsg || `选择：${opt.text}`);
-                        handleNextScene();
-                        setInteractionStep('narration');
-                      }}
-                      className="w-full text-left p-4 rounded-2xl bg-[#e2d5cb]/20 hover:bg-[#e2d5cb]/35 border border-[#e2d5cb]/30 text-[#f3ece7] font-bold text-xs sm:text-sm transition active:scale-98 shadow-xl backdrop-blur-md cursor-pointer"
-                    >
-                      <span>{opt.text}</span>
-                    </button>
-                  ))}
+                  {resolveSceneChoices(currentScene.choices, role.name).map((opt, i) => {
+                    const cleanText = opt.text.replace(/^◇\s*/, '');
+                    return (
+                      <button
+                        key={i}
+                        onClick={() => {
+                          onShowToast(opt.toastMsg || `选择：${cleanText}`);
+                          handleNextScene();
+                          setInteractionStep('narration');
+                        }}
+                        className="w-full text-left p-4 rounded-2xl bg-[#e2d5cb]/20 hover:bg-[#e2d5cb]/35 border border-[#e2d5cb]/30 text-[#f3ece7] font-bold text-xs sm:text-sm transition active:scale-98 shadow-xl backdrop-blur-md cursor-pointer flex items-center group"
+                      >
+                        <span className="inline-flex items-center justify-center shrink-0 w-4 h-4 mr-2.5">
+                          <span className="w-2 h-2 rotate-45 border border-amber-300/80 bg-amber-300/30 group-hover:scale-125 group-hover:bg-amber-300 group-hover:shadow-[0_0_8px_rgba(252,211,77,0.8)] transition-all duration-200" />
+                        </span>
+                        <span className="leading-snug">{cleanText}</span>
+                      </button>
+                    );
+                  })}
                 </div>
 
                 <div className="text-right pt-2">

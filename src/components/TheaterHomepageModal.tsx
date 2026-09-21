@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ChevronLeft, Heart, Play, Sparkles, Video, Mic, Bookmark, Check, Clapperboard, Star, Phone, RotateCcw, Music, ChevronDown, ChevronRight } from 'lucide-react';
+import { ChevronLeft, Heart, Play, Sparkles, Video, Mic, Bookmark, Check, Clapperboard, Star, Phone, RotateCcw, Music, ChevronDown, ChevronRight, BookOpen } from 'lucide-react';
 import { DEFAULT_THEATERS } from '../data/storyTheaterPresetData';
 import { ArtisticTheaterTitle } from './ArtisticTheaterTitle';
 import { TransparentSprite } from './TransparentSprite';
@@ -226,14 +226,6 @@ export const TheaterHomepageModal: React.FC<TheaterHomepageModalProps> = ({
       bgImage: imgFittingRoom,
       roleName: '陆景琛',
       scenes: DEFAULT_THEATERS.lujingchen?.[2]?.scenes || []
-    },
-    {
-      id: 'theater_school_bully',
-      title: '重生后撩个校霸带回家',
-      desc: '前世他害我惨死，今生我嫁给他弟。',
-      bgImage: imgAnimeCgBullyMansion,
-      roleName: '凌夜',
-      scenes: BULLY_SCENES
     },
     {
       id: 'theater_mb_1',
@@ -583,20 +575,20 @@ export const TheaterHomepageModal: React.FC<TheaterHomepageModalProps> = ({
                       <button
                         type="button"
                         onClick={() => onShowToast(`📖 当前在《${selectedTheater.title}》章节内`)}
-                        className="w-10 h-10 rounded-full bg-[#e2d5cb]/25 hover:bg-[#e2d5cb]/40 border border-[#e2d5cb]/30 backdrop-blur-md flex items-center justify-center text-[#f3ece7] font-bold text-xs shadow-lg transition active:scale-90 cursor-pointer"
+                        className="w-10 h-10 rounded-full bg-[#e2d5cb]/25 hover:bg-[#e2d5cb]/40 border border-[#e2d5cb]/30 backdrop-blur-md flex items-center justify-center text-[#f3ece7] shadow-lg transition active:scale-90 cursor-pointer"
                         title="章节目录"
                       >
-                        目
+                        <BookOpen size={16} />
                       </button>
 
                       {/* AI Settings Button */}
                       <button
                         type="button"
                         onClick={() => onShowToast('✦ AI导演气场已调至极致沉浸状态')}
-                        className="w-10 h-10 rounded-full bg-[#e2d5cb]/25 hover:bg-[#e2d5cb]/40 border border-[#e2d5cb]/30 backdrop-blur-md flex items-center justify-center text-[#f3ece7] font-bold shadow-lg transition active:scale-90 cursor-pointer"
+                        className="w-10 h-10 rounded-full bg-[#e2d5cb]/25 hover:bg-[#e2d5cb]/40 border border-[#e2d5cb]/30 backdrop-blur-md flex items-center justify-center text-[#f3ece7] shadow-lg transition active:scale-90 cursor-pointer"
                         title="AI设置"
                       >
-                        ✦
+                        <Sparkles size={16} className="text-amber-200 animate-pulse" />
                       </button>
 
                       {/* Replay Button */}
@@ -706,14 +698,18 @@ export const TheaterHomepageModal: React.FC<TheaterHomepageModalProps> = ({
                         {/* Interactive Choice Options */}
                         <div className="space-y-3">
                           {activeScene.choices.map((choice: any, idx: number) => {
-                            const choiceText = choice.text.startsWith('◇') ? choice.text : `◇ ${choice.text}`;
+                            const rawText = typeof choice === 'string' ? choice : (choice.text || '做出回应');
+                            const cleanText = rawText.replace(/^◇\s*/, '');
                             return (
                               <button
                                 key={idx}
-                                onClick={() => handleNextStep(choiceText, choice.nextId, choice.intimacyGain, choice.toastMsg)}
-                                className="w-full text-left p-4 rounded-2xl bg-[#e2d5cb]/20 hover:bg-[#e2d5cb]/35 border border-[#e2d5cb]/30 text-[#f3ece7] font-bold text-xs sm:text-sm transition active:scale-98 shadow-xl backdrop-blur-md cursor-pointer"
+                                onClick={() => handleNextStep(cleanText, choice.nextId, choice.intimacyGain, choice.toastMsg)}
+                                className="w-full text-left p-4 rounded-2xl bg-[#e2d5cb]/20 hover:bg-[#e2d5cb]/35 border border-[#e2d5cb]/30 text-[#f3ece7] font-bold text-xs sm:text-sm transition active:scale-98 shadow-xl backdrop-blur-md cursor-pointer flex items-center group"
                               >
-                                <span>{choiceText}</span>
+                                <span className="inline-flex items-center justify-center shrink-0 w-4 h-4 mr-2.5">
+                                  <span className="w-2 h-2 rotate-45 border border-amber-300/80 bg-amber-300/30 group-hover:scale-125 group-hover:bg-amber-300 group-hover:shadow-[0_0_8px_rgba(252,211,77,0.8)] transition-all duration-200" />
+                                </span>
+                                <span className="leading-snug">{cleanText}</span>
                               </button>
                             );
                           })}
