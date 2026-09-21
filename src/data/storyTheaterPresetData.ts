@@ -1,5 +1,10 @@
 import { StoryLineItem, MiniTheaterItem } from '../types';
 import { resolveTheaterBg } from '../utils/theaterHelper';
+import imgMansionStudy from '../assets/images/mansion_study_night_1789897698411.jpg';
+import imgYachtNight from '../assets/images/yacht_starry_night_1789897718059.jpg';
+import imgFittingRoom from '../assets/images/luxury_fitting_room_1789897735600.jpg';
+import imgCarRain from '../assets/images/car_interior_rain_night_1789897758793.jpg';
+import imgObservatory from '../assets/images/observatory_stars_1789897778630.jpg';
 
 export const DEFAULT_STORYLINES: Record<string, StoryLineItem[]> = {
   // 1. 陆景琛 (霸道总裁)
@@ -375,7 +380,7 @@ export const DEFAULT_THEATERS: Record<string, MiniTheaterItem[]> = {
       title: '《豪门书房的夜读演练》',
       desc: '文字互动 + 动态光影 + 沉浸原声语音 + 雨夜书房背景',
       wordCount: 1500,
-      bgImage: '/src/assets/images/mansion_study_night_1789897698411.jpg',
+      bgImage: imgMansionStudy,
       dynamicGif: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&auto=format&fit=crop&q=80',
       scenes: [
         {
@@ -402,7 +407,7 @@ export const DEFAULT_THEATERS: Record<string, MiniTheaterItem[]> = {
       title: '《游艇夜宴的星空拥吻》',
       desc: '文字抉择 + 海浪动态视觉 + 独白配音 + 豪华游艇背景',
       wordCount: 1400,
-      bgImage: '/src/assets/images/yacht_starry_night_1789897718059.jpg',
+      bgImage: imgYachtNight,
       dynamicGif: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800&auto=format&fit=crop&q=80',
       scenes: [
         {
@@ -421,7 +426,7 @@ export const DEFAULT_THEATERS: Record<string, MiniTheaterItem[]> = {
       title: '《试衣间里的霸道宣示》',
       desc: '互动对话 + 奢华场景 + 角色原声配音 + 高定试衣间',
       wordCount: 1300,
-      bgImage: '/src/assets/images/luxury_fitting_room_1789897735600.jpg',
+      bgImage: imgFittingRoom,
       dynamicGif: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=800&auto=format&fit=crop&q=80',
       scenes: [
         {
@@ -444,7 +449,7 @@ export const DEFAULT_THEATERS: Record<string, MiniTheaterItem[]> = {
       title: '《雨夜车厢里的倾诉》',
       desc: '文字选择 + 动态雨丝 + 原音独白语音 + 复古车内背景',
       wordCount: 1200,
-      bgImage: '/src/assets/images/car_interior_rain_night_1789897758793.jpg',
+      bgImage: imgCarRain,
       dynamicGif: 'https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?w=800&auto=format&fit=crop&q=80',
       scenes: [
         {
@@ -463,7 +468,7 @@ export const DEFAULT_THEATERS: Record<string, MiniTheaterItem[]> = {
       title: '《天文台的夏夜看星》',
       desc: '文字选择 + 璀璨星空 GIF + 柔和原音 + 观测台背景',
       wordCount: 1300,
-      bgImage: '/src/assets/images/observatory_stars_1789897778630.jpg',
+      bgImage: imgObservatory,
       dynamicGif: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=800&auto=format&fit=crop&q=80',
       scenes: [
         {
@@ -486,7 +491,7 @@ export const DEFAULT_THEATERS: Record<string, MiniTheaterItem[]> = {
       title: '《阳台小酌与心事倾诉》',
       desc: '文字互动 + 微风夜景 GIF + 暖心语调 + 阳台夜景背景',
       wordCount: 1100,
-      bgImage: '/src/assets/images/yacht_starry_night_1789897718059.jpg',
+      bgImage: imgYachtNight,
       dynamicGif: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&auto=format&fit=crop&q=80',
       scenes: [
         {
@@ -528,7 +533,7 @@ export const DEFAULT_THEATERS: Record<string, MiniTheaterItem[]> = {
       title: '《私人陈列室的永恒锁扣》',
       desc: '文字互动 + 幽暗光影 GIF + 磁性低语 + 奢华暗室背景',
       wordCount: 1400,
-      bgImage: '/src/assets/images/mansion_study_night_1789897698411.jpg',
+      bgImage: imgMansionStudy,
       dynamicGif: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&auto=format&fit=crop&q=80',
       scenes: [
         {
@@ -551,7 +556,7 @@ export const DEFAULT_THEATERS: Record<string, MiniTheaterItem[]> = {
       title: '《雨夜办公室的专属热可可》',
       desc: '文字选择 + 雨水特效 + 声优配音 + 总裁办公室',
       wordCount: 1300,
-      bgImage: '/src/assets/images/mansion_study_night_1789897698411.jpg',
+      bgImage: imgMansionStudy,
       dynamicGif: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&auto=format&fit=crop&q=80',
       scenes: [
         {
@@ -593,7 +598,7 @@ export const DEFAULT_THEATERS: Record<string, MiniTheaterItem[]> = {
       title: '《雨夜阳台的真心话对话》',
       desc: '文字选择 + 雨滴光效 + 独白配音 + 阳台夜景',
       wordCount: 1400,
-      bgImage: '/src/assets/images/car_interior_rain_night_1789897758793.jpg',
+      bgImage: imgCarRain,
       dynamicGif: 'https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?w=800&auto=format&fit=crop&q=80',
       scenes: [
         {
@@ -616,7 +621,7 @@ export const DEFAULT_THEATERS: Record<string, MiniTheaterItem[]> = {
       title: '《私人酒廊的深情温存》',
       desc: '文字互动 + 奢华红酒 + 御姐声优 + 高空露台',
       wordCount: 1300,
-      bgImage: '/src/assets/images/yacht_starry_night_1789897718059.jpg',
+      bgImage: imgYachtNight,
       dynamicGif: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=800&auto=format&fit=crop&q=80',
       scenes: [
         {
@@ -635,7 +640,7 @@ export const DEFAULT_THEATERS: Record<string, MiniTheaterItem[]> = {
       title: '《雨夜阳台的真心话对话》',
       desc: '文字选择 + 沉香木香气 + 独白配音 + 阳台夜景',
       wordCount: 1400,
-      bgImage: '/src/assets/images/car_interior_rain_night_1789897758793.jpg',
+      bgImage: imgCarRain,
       dynamicGif: 'https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?w=800&auto=format&fit=crop&q=80',
       scenes: [
         {
@@ -658,7 +663,7 @@ export const DEFAULT_THEATERS: Record<string, MiniTheaterItem[]> = {
       title: '《星空露台的独占告白》',
       desc: '文字选择 + 独占心意 + 甜美原声 + 晚安花海',
       wordCount: 1200,
-      bgImage: '/src/assets/images/observatory_stars_1789897778630.jpg',
+      bgImage: imgObservatory,
       dynamicGif: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=800&auto=format&fit=crop&q=80',
       scenes: [
         {
@@ -681,7 +686,7 @@ export const DEFAULT_THEATERS: Record<string, MiniTheaterItem[]> = {
       title: '《屋顶星空的汽水晚风》',
       desc: '文字互动 + 屋顶汽水 + 治愈声优 + 阳光草坪',
       wordCount: 1100,
-      bgImage: '/src/assets/images/observatory_stars_1789897778630.jpg',
+      bgImage: imgObservatory,
       dynamicGif: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&auto=format&fit=crop&q=80',
       scenes: [
         {
@@ -727,7 +732,7 @@ export const DEFAULT_THEATERS: Record<string, MiniTheaterItem[]> = {
       title: '《书香图书馆的午后微风》',
       desc: '文字互动 + 书香清风 + 温柔声优 + 林荫校园',
       wordCount: 1200,
-      bgImage: '/src/assets/images/mansion_study_night_1789897698411.jpg',
+      bgImage: imgMansionStudy,
       dynamicGif: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=800&auto=format&fit=crop&q=80',
       scenes: [
         {

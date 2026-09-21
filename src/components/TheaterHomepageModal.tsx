@@ -8,6 +8,11 @@ import imgAnimeBully from '../assets/images/anime_sprite_bully_1789953827113.jpg
 import imgAnimeSpriteLinmubai from '../assets/images/anime_sprite_linmubai_1789953814729.jpg';
 import imgAnimeWhitehair from '../assets/images/anime_whitehair_ceo_1789720004085.jpg';
 import imgAnimeCgBullyMansion from '../assets/images/anime_cg_bully_mansion_1789954051013.jpg';
+import imgMansionStudy from '../assets/images/mansion_study_night_1789897698411.jpg';
+import imgYachtNight from '../assets/images/yacht_starry_night_1789897718059.jpg';
+import imgFittingRoom from '../assets/images/luxury_fitting_room_1789897735600.jpg';
+import imgCarRain from '../assets/images/car_interior_rain_night_1789897758793.jpg';
+import imgObservatory from '../assets/images/observatory_stars_1789897778630.jpg';
 import { ROLE_MEDIA_MAP } from '../data/rolePortraits';
 import { resolveTheaterBg, resolveNarrationText, resolveSceneChoices, formatChapterBadge } from '../utils/theaterHelper';
 
@@ -202,7 +207,7 @@ export const TheaterHomepageModal: React.FC<TheaterHomepageModalProps> = ({
       id: 'theater_ljc_1',
       title: '《豪门书房的夜读演练》',
       desc: '文字互动 + 动态光影 + 沉浸原声语音 + 雨夜书房背景',
-      bgImage: '/src/assets/images/mansion_study_night_1789897698411.jpg',
+      bgImage: imgMansionStudy,
       roleName: '陆景琛',
       scenes: DEFAULT_THEATERS.lujingchen?.[0]?.scenes || []
     },
@@ -210,7 +215,7 @@ export const TheaterHomepageModal: React.FC<TheaterHomepageModalProps> = ({
       id: 'theater_ljc_2',
       title: '《游艇夜宴的星空拥吻》',
       desc: '文字抉择 + 海浪动态视觉 + 独白配音 + 豪华游艇背景',
-      bgImage: '/src/assets/images/yacht_starry_night_1789897718059.jpg',
+      bgImage: imgYachtNight,
       roleName: '陆景琛',
       scenes: DEFAULT_THEATERS.lujingchen?.[1]?.scenes || []
     },
@@ -218,7 +223,7 @@ export const TheaterHomepageModal: React.FC<TheaterHomepageModalProps> = ({
       id: 'theater_ljc_3',
       title: '《试衣间里的霸道宣示》',
       desc: '互动对话 + 奢华场景 + 角色原声配音 + 高定试衣间',
-      bgImage: '/src/assets/images/luxury_fitting_room_1789897735600.jpg',
+      bgImage: imgFittingRoom,
       roleName: '陆景琛',
       scenes: DEFAULT_THEATERS.lujingchen?.[2]?.scenes || []
     },
@@ -234,7 +239,7 @@ export const TheaterHomepageModal: React.FC<TheaterHomepageModalProps> = ({
       id: 'theater_mb_1',
       title: '《雨夜车厢里的倾诉》',
       desc: '文字选择 + 动态雨丝 + 原音独白语音 + 复古车内背景',
-      bgImage: '/src/assets/images/car_interior_rain_night_1789897758793.jpg',
+      bgImage: imgCarRain,
       roleName: '林慕白',
       scenes: DEFAULT_THEATERS.linmubai?.[0]?.scenes || []
     },
@@ -242,7 +247,7 @@ export const TheaterHomepageModal: React.FC<TheaterHomepageModalProps> = ({
       id: 'theater_mb_2',
       title: '《天文台的夏夜看星》',
       desc: '文字选择 + 璀璨星空 GIF + 柔和原音 + 观测台背景',
-      bgImage: '/src/assets/images/observatory_stars_1789897778630.jpg',
+      bgImage: imgObservatory,
       roleName: '林慕白',
       scenes: DEFAULT_THEATERS.linmubai?.[1]?.scenes || []
     },

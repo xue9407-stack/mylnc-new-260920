@@ -6,8 +6,8 @@ import imgObservatory from '../assets/images/observatory_stars_1789897778630.jpg
 import imgSchoolBullyCover from '../assets/images/school_bully_theater_cover_1789897411115.jpg';
 
 export function resolveTheaterBg(title: string = '', explicitBg?: string): string {
-  // If explicitly provided a valid local bundled asset image, use it
-  if (explicitBg && explicitBg.includes('/src/assets/images/')) {
+  // If explicitly provided a valid bundled asset or http URL (and NOT a raw unbundled /src/ path), use it
+  if (explicitBg && explicitBg.trim().length > 5 && !explicitBg.includes('/src/assets/images/')) {
     return explicitBg;
   }
 
