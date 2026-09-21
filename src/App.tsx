@@ -1375,8 +1375,6 @@ export default function App() {
                     setShowRankingModal(true);
                   } else if (item.id === 'theaters') {
                     setShowTheaterModal(true);
-                  } else if (item.id === 'outfits') {
-                    setShowOutfitModal(true);
                   } else if (item.id === 'games') {
                     setShowDiceGame(true);
                   } else {
@@ -2353,18 +2351,18 @@ export default function App() {
                     </div>
                     <div className="space-y-1">
                       <p className="text-xs text-white font-bold flex items-center gap-1 justify-center">
-                        <span>服装搭配 & 形象穿搭已开启！</span>
+                        <span>服装搭配 & 形象装扮即将开启</span>
                       </p>
-                      <p className="text-[9px] text-white/40 max-w-[240px] mx-auto">心动角色的多款精美服饰与多画风全身形象现已支持随心定制</p>
+                      <p className="text-[9px] text-white/40 max-w-[240px] mx-auto">心动角色的精美服饰与个性化形象装扮正在升级准备中，敬请期待</p>
                     </div>
                     <button
                       type="button"
                       onClick={() => {
-                        setShowOutfitModal(true);
+                        showToast('即将开启 装扮 功能');
                       }}
-                      className="px-4 py-1.5 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-[10px] font-black text-white shadow-md hover:scale-102 active:scale-98 transition flex items-center gap-1 cursor-pointer"
+                      className="px-4 py-1.5 rounded-full bg-white/10 hover:bg-white/15 text-[10px] font-bold text-white/80 transition flex items-center gap-1 cursor-pointer"
                     >
-                      <span>打开试衣间 ➔</span>
+                      <span>即将开启</span>
                     </button>
                   </div>
                 )}
