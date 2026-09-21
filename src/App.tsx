@@ -1375,8 +1375,6 @@ export default function App() {
                     setShowRankingModal(true);
                   } else if (item.id === 'theaters') {
                     setShowTheaterModal(true);
-                  } else if (item.id === 'games') {
-                    setShowDiceGame(true);
                   } else {
                     showToast(`即将开启 ${item.label} 功能`);
                   }
