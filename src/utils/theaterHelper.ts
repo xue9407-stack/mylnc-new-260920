@@ -4,24 +4,25 @@ import imgFittingRoom from '../assets/images/luxury_fitting_room_1789897735600.j
 import imgCarRain from '../assets/images/car_interior_rain_night_1789897758793.jpg';
 import imgObservatory from '../assets/images/observatory_stars_1789897778630.jpg';
 import imgSchoolBullyCover from '../assets/images/school_bully_theater_cover_1789897411115.jpg';
+import imgMansionHome from '../assets/images/lujingchen_home_1789892572872.jpg';
 
-export function resolveTheaterBg(title: string = '', explicitBg?: string): string {
+export function resolveTheaterBg(title: string = '', explicitBg?: string, returnNullIfNoMatch: boolean = false): string | null {
   // If explicitly provided a valid bundled asset or http URL (and NOT a raw unbundled /src/ path), use it
   if (explicitBg && explicitBg.trim().length > 5 && !explicitBg.includes('/src/assets/images/')) {
     return explicitBg;
   }
 
   const t = title.toLowerCase();
-  if (t.includes('书房') || t.includes('夜读')) return imgMansionStudy;
-  if (t.includes('游艇') || t.includes('拥吻')) return imgYachtNight;
-  if (t.includes('试衣间') || t.includes('宣示') || t.includes('高定')) return imgFittingRoom;
+  if (t.includes('书房') || t.includes('夜读') || t.includes('急件') || t.includes('报告')) return imgMansionStudy;
+  if (t.includes('游艇') || t.includes('拥吻') || t.includes('想见你') || t.includes('告白')) return imgYachtNight;
+  if (t.includes('试衣间') || t.includes('宣示') || t.includes('高定') || t.includes('礼物')) return imgFittingRoom;
   if (t.includes('校霸') || t.includes('反击') || t.includes('复仇')) return imgSchoolBullyCover;
   if (t.includes('雨夜车厢') || t.includes('车内') || t.includes('车厢')) return imgCarRain;
   if (t.includes('星空') || t.includes('观星') || t.includes('天文台') || t.includes('即兴倾诉') || t.includes('誓约')) return imgObservatory;
   if (t.includes('雨夜') || t.includes('阳台') || t.includes('雨')) return imgCarRain;
 
-  if (t.includes('办公室') || t.includes('热可可') || t.includes('图书馆')) {
-    return imgMansionStudy;
+  if (t.includes('办公室') || t.includes('热可可') || t.includes('咖啡') || t.includes('图书馆')) {
+    return imgMansionHome;
   }
   if (t.includes('酒廊') || t.includes('温存') || t.includes('露台')) {
     return imgYachtNight;
@@ -37,6 +38,7 @@ export function resolveTheaterBg(title: string = '', explicitBg?: string): strin
     return explicitBg;
   }
 
+  if (returnNullIfNoMatch) return null;
   return imgObservatory;
 }
 

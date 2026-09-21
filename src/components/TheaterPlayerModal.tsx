@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Sparkles, Volume2, RotateCcw, Music, Menu, Heart, Play, BookOpen, Settings2, X, Diamond, Phone, Video, Mic, ChevronDown, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Sparkles, Volume2, RotateCcw, Music, Menu, Heart, Play, BookOpen, Settings2, X, Diamond, Phone, Video, Mic, ChevronDown, ChevronRight, Check } from 'lucide-react';
 import { MiniTheaterItem, Role, TheaterScene } from '../types';
 import { speakRoleDialogue } from '../utils/ttsHelper';
 import { ArtisticTheaterTitle } from './ArtisticTheaterTitle';
@@ -16,6 +16,8 @@ interface TheaterPlayerModalProps {
   onClose: () => void;
   onShowToast: (msg: string) => void;
   onStartChat: (role: Role, prompt?: string) => void;
+  theaterFavorites: Record<string, boolean>;
+  onToggleFavorite: (id: string) => void;
 }
 
 const WEATHER_BACKGROUNDS = {
@@ -25,6 +27,33 @@ const WEATHER_BACKGROUNDS = {
   cozy: 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=800&auto=format&fit=crop&q=80',
 };
 
+const TheaterActionButton = ({
+  onClick,
+  icon,
+  title,
+  isActive = false,
+  className = '',
+}: {
+  onClick: () => void;
+  icon: React.ReactNode;
+  title: string;
+  isActive?: boolean;
+  className?: string;
+}) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className={`w-10 h-10 rounded-full backdrop-blur-md flex items-center justify-center shadow-lg transition-all duration-200 active:scale-85 active:opacity-70 cursor-pointer ${
+      isActive
+        ? 'bg-[#e2d5cb]/40 border-2 border-white/90 shadow-[0_0_15px_rgba(255,255,255,0.3)]'
+        : 'bg-[#e2d5cb]/25 hover:bg-[#e2d5cb]/40 border border-[#e2d5cb]/30'
+    } ${className}`}
+    title={title}
+  >
+    {icon}
+  </button>
+);
+
 export const TheaterPlayerModal: React.FC<TheaterPlayerModalProps> = ({
   isOpen,
   role,
@@ -32,11 +61,13 @@ export const TheaterPlayerModal: React.FC<TheaterPlayerModalProps> = ({
   onClose,
   onShowToast,
   onStartChat,
+  theaterFavorites,
+  onToggleFavorite,
 }) => {
   const [stage, setStage] = useState<'cover' | 'reader'>('cover');
   const [currentSceneIdx, setCurrentSceneIdx] = useState(0);
   const [isPlayingVoice, setIsPlayingVoice] = useState(false);
-  const [isFavorited, setIsFavorited] = useState(false);
+  const isFavorited = theater ? !!theaterFavorites[theater.id] : false;
   const [interactionStep, setInteractionStep] = useState<'narration' | 'dialogue' | 'choices'>('narration');
 
   // Advanced menu modals
@@ -47,6 +78,7 @@ export const TheaterPlayerModal: React.FC<TheaterPlayerModalProps> = ({
   // Customizable settings that drive the content
   const [aiTone, setAiTone] = useState<'gentle' | 'tsundere' | 'possessive'>('gentle');
   const [selectedWeather, setSelectedWeather] = useState<'rainy' | 'starry' | 'dawn' | 'cozy' | null>(null);
+  const [choiceDrivenBg, setChoiceDrivenBg] = useState<string | null>(null);
   const [customDialogueHistory, setCustomDialogueHistory] = useState<TheaterScene[]>([]);
 
   useEffect(() => {
@@ -55,6 +87,7 @@ export const TheaterPlayerModal: React.FC<TheaterPlayerModalProps> = ({
     setIsPlayingVoice(false);
     setCustomDialogueHistory([]);
     setInteractionStep('narration');
+    setChoiceDrivenBg(null);
   }, [theater?.id]);
 
   if (!isOpen || !theater) return null;
@@ -104,7 +137,7 @@ export const TheaterPlayerModal: React.FC<TheaterPlayerModalProps> = ({
   const currentScene = allScenes[currentSceneIdx] || allScenes[0];
 
   // Dynamic Background Image driven by title and AI Weather settings
-  const activeBg = (selectedWeather ? WEATHER_BACKGROUNDS[selectedWeather] : null) || resolveTheaterBg(theater.title, theater.bgImage);
+  const activeBg = (selectedWeather ? WEATHER_BACKGROUNDS[selectedWeather] : null) || choiceDrivenBg || currentScene.bgImage || resolveTheaterBg(theater.title, theater.bgImage);
 
   const handleNextScene = () => {
     if (currentSceneIdx < allScenes.length - 1) {
@@ -199,16 +232,18 @@ export const TheaterPlayerModal: React.FC<TheaterPlayerModalProps> = ({
                 <button
                   type="button"
                   onClick={() => {
-                    setIsFavorited(!isFavorited);
-                    onShowToast(isFavorited ? '已取消收藏' : '⭐ 成功收藏该小剧场！');
+                    if (theater) {
+                      onToggleFavorite(theater.id);
+                      onShowToast(isFavorited ? '已取消收藏' : '⭐ 成功收藏该小剧场！');
+                    }
                   }}
                   className={`flex-1 py-3.5 rounded-2xl backdrop-blur-md border text-xs font-extrabold flex items-center justify-center gap-1.5 transition active:scale-95 cursor-pointer ${
                     isFavorited
-                      ? 'bg-pink-600 text-white border-pink-400 shadow-lg shadow-pink-600/30'
+                      ? 'bg-rose-500/20 text-rose-300 border-rose-500/40 shadow-lg shadow-rose-600/10'
                       : 'bg-black/60 hover:bg-black/80 text-white border-white/20'
                   }`}
                 >
-                  <Heart size={16} className={isFavorited ? 'fill-white' : ''} />
+                  {isFavorited ? <Check size={16} /> : <Heart size={16} />}
                   <span>{isFavorited ? '已收藏' : '收藏'}</span>
                 </button>
 
@@ -233,52 +268,44 @@ export const TheaterPlayerModal: React.FC<TheaterPlayerModalProps> = ({
             {/* Right-Hand Vertical Action Toolbar */}
             <div className="absolute right-3.5 top-20 z-30 flex flex-col items-center gap-2.5">
               {/* Catalog Button */}
-              <button
-                type="button"
+              <TheaterActionButton
                 onClick={() => setShowCatalogModal(true)}
-                className="w-10 h-10 rounded-full bg-[#e2d5cb]/25 hover:bg-[#e2d5cb]/40 border border-[#e2d5cb]/30 backdrop-blur-md flex items-center justify-center text-[#f3ece7] shadow-lg transition active:scale-90 cursor-pointer"
+                icon={<BookOpen size={16} />}
                 title="剧场章节目录"
-              >
-                <BookOpen size={16} />
-              </button>
+              />
 
               {/* AI Settings Button */}
-              <button
-                type="button"
+              <TheaterActionButton
                 onClick={() => setShowSettingsModal(true)}
-                className="w-10 h-10 rounded-full bg-[#e2d5cb]/25 hover:bg-[#e2d5cb]/40 border border-[#e2d5cb]/30 backdrop-blur-md flex items-center justify-center text-[#f3ece7] shadow-lg transition active:scale-90 cursor-pointer"
+                icon={<Sparkles size={16} className="text-amber-200 animate-pulse" />}
                 title="AI 导演设置"
-              >
-                <Sparkles size={16} className="text-amber-200 animate-pulse" />
-              </button>
+              />
 
               {/* Replay Button */}
-              <button
-                type="button"
+              <TheaterActionButton
                 onClick={() => {
-                  setCurrentSceneIdx(0);
-                  setCustomDialogueHistory([]);
-                  setInteractionStep('narration');
-                  onShowToast('↺ 章节已重置到初始状态');
+                  if (confirm('确认要重置章节剧情吗？这将清除当前所有进度。')) {
+                    setCurrentSceneIdx(0);
+                    setCustomDialogueHistory([]);
+                    setInteractionStep('narration');
+                    setChoiceDrivenBg(null);
+                    onShowToast('↺ 章节已重置到初始状态');
+                  }
                 }}
-                className="w-10 h-10 rounded-full bg-[#e2d5cb]/25 hover:bg-[#e2d5cb]/40 border border-[#e2d5cb]/30 backdrop-blur-md flex items-center justify-center text-[#f3ece7] shadow-lg transition active:scale-90 cursor-pointer"
+                icon={<RotateCcw size={16} />}
                 title="重新播放"
-              >
-                <RotateCcw size={16} />
-              </button>
+              />
 
               {/* Audio Toggle Button */}
-              <button
-                type="button"
+              <TheaterActionButton
                 onClick={() => {
                   setIsMusicPlaying(!isMusicPlaying);
-                  onShowToast(isMusicPlaying ? '🔇 背景环境音效已暂停' : '♪ 已开启剧场微风星空沉浸环境音');
+                  onShowToast(isMusicPlaying ? '🔇 沉浸式环境音效已暂停' : '♪ 剧场环境音效已激活');
                 }}
-                className="w-10 h-10 rounded-full bg-[#e2d5cb]/25 hover:bg-[#e2d5cb]/40 border border-[#e2d5cb]/30 backdrop-blur-md flex items-center justify-center text-[#f3ece7] shadow-lg transition active:scale-90 cursor-pointer"
+                icon={<Music size={16} />}
                 title="背景音效"
-              >
-                <Music size={16} />
-              </button>
+                isActive={isMusicPlaying}
+              />
             </div>
 
             {/* Chapter Pill Badge near Top */}
@@ -294,7 +321,10 @@ export const TheaterPlayerModal: React.FC<TheaterPlayerModalProps> = ({
             {/* ================= STAGE 1: NARRATION (EXACT MATCH FOR IMAGE 1) ================= */}
             {interactionStep === 'narration' && (
               <div 
-                onClick={() => setInteractionStep('dialogue')}
+                onClick={() => {
+                  setInteractionStep('dialogue');
+                  setChoiceDrivenBg(null);
+                }}
                 className="flex-1 flex flex-col justify-end px-6 pb-10 pt-24 relative z-20 cursor-pointer select-none animate-fadeIn"
               >
                 <p className="text-base sm:text-lg text-[#fdfbf7] font-normal leading-relaxed tracking-wide drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] drop-shadow-[0_0_12px_rgba(0,0,0,0.9)]">
@@ -314,7 +344,10 @@ export const TheaterPlayerModal: React.FC<TheaterPlayerModalProps> = ({
             {/* ================= STAGE 2: DIALOGUE (EXACT MATCH FOR IMAGE 3) ================= */}
             {interactionStep === 'dialogue' && (
               <div 
-                onClick={() => setInteractionStep('choices')}
+                onClick={() => {
+                  setInteractionStep('choices');
+                  setChoiceDrivenBg(null);
+                }}
                 className="flex-1 flex flex-col justify-end px-4 pb-8 pt-24 relative z-20 cursor-pointer select-none animate-fadeIn"
               >
                 {/* Male Main Lead Portrait Standee in Center */}
@@ -370,6 +403,10 @@ export const TheaterPlayerModal: React.FC<TheaterPlayerModalProps> = ({
                       <button
                         key={i}
                         onClick={() => {
+                          // Update background based on choice keywords if applicable
+                          const choiceBg = resolveTheaterBg(cleanText, undefined, true);
+                          if (choiceBg) setChoiceDrivenBg(choiceBg);
+                          
                           onShowToast(opt.toastMsg || `选择：${cleanText}`);
                           handleNextScene();
                           setInteractionStep('narration');
@@ -479,7 +516,7 @@ export const TheaterPlayerModal: React.FC<TheaterPlayerModalProps> = ({
                       type="button"
                       onClick={() => {
                         setSelectedWeather(w.key as any);
-                        onShowToast(`🎨 AI 氛围天气已切换为：${w.label}`);
+                        onShowToast(`🎨 AI 天气氛围感：${w.label} (渲染中...)`);
                       }}
                       className={`py-2 rounded-xl text-xs font-bold border transition cursor-pointer ${
                         selectedWeather === w.key
@@ -507,7 +544,7 @@ export const TheaterPlayerModal: React.FC<TheaterPlayerModalProps> = ({
                       type="button"
                       onClick={() => {
                         setAiTone(t.key as any);
-                        onShowToast(`🎭 性格倾向已切换至：${t.label}`);
+                        onShowToast(`🎭 AI 导演已调整性格倾向：${t.label}`);
                       }}
                       className={`py-2 rounded-xl text-xs font-bold border transition cursor-pointer ${
                         aiTone === t.key

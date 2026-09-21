@@ -166,7 +166,10 @@ export interface TheaterScene {
   id: string;
   speaker: string;
   avatar?: string;
+  roleAvatar?: string;
   dialogue: string;
+  narrationText?: string;
+  chapterTitle?: string;
   hasVoice?: boolean;
   bgImage?: string;
   dynamicGif?: string;
@@ -201,4 +204,5 @@ export type AppPage =
   | 'creator'
   | 'settings'
   | 'help'
-  | 'message_roaming';
+  | 'message_roaming'
+  | 'favorites';

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Role, Conversation, ChatMessage, GroupChat, GroupMessage, UserProfile, AppPage } from './types';
+import { Role, Conversation, ChatMessage, GroupChat, GroupMessage, UserProfile, AppPage, MiniTheaterItem } from './types';
 import { api } from './services/api';
 import { PhoneFrame } from './components/PhoneFrame';
 import { DetailModal } from './components/DetailModal';
@@ -19,8 +19,9 @@ import { HomeRecommendView } from './components/HomeRecommendView';
 import { VipView } from './components/VipView';
 import { EditProfileModal } from './components/EditProfileModal';
 import { OutfitModal } from './components/OutfitModal';
-import { LiarDiceGameModal } from './components/LiarDiceGameModal';
 import { TheaterHomepageModal } from './components/TheaterHomepageModal';
+import { FavoritesView } from './components/FavoritesView';
+import { LiarDiceGame } from './components/LiarDiceGame';
 import { loadAllIntimacies, saveIntimacy, getIntimacyData, addDailyChatIntimacy, AddChatIntimacyResult } from './utils/intimacy';
 import { ROLE_MEDIA_MAP } from './data/rolePortraits';
 import { DEFAULT_ROLES } from './data/rolesData';
@@ -137,8 +138,26 @@ export default function App() {
   const [showRealNameAuthModal, setShowRealNameAuthModal] = useState(false);
   const [showRankingModal, setShowRankingModal] = useState(false);
   const [showTheaterModal, setShowTheaterModal] = useState(false);
+  const [showDiceGame, setShowDiceGame] = useState(false);
+  const [selectedTheaterToPlay, setSelectedTheaterToPlay] = useState<MiniTheaterItem | null>(null);
+  const [theaterFavorites, setTheaterFavorites] = useState<Record<string, boolean>>(() => {
+    try {
+      const saved = localStorage.getItem('theater_favorites');
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  });
+
+  const toggleTheaterFavorite = (id: string) => {
+    setTheaterFavorites(prev => {
+      const newVal = { ...prev, [id]: !prev[id] };
+      localStorage.setItem('theater_favorites', JSON.stringify(newVal));
+      return newVal;
+    });
+  };
+
   const [showOutfitModal, setShowOutfitModal] = useState(false);
-  const [showLiarDiceModal, setShowLiarDiceModal] = useState(false);
   const [detailModalTab, setDetailModalTab] = useState<'about' | 'story' | 'theater'>('about');
   const [homeTopTab, setHomeTopTab] = useState<'recommend' | 'theater' | 'original' | 'game'>('recommend');
   const [hasUnreadMoments, setHasUnreadMoments] = useState<boolean>(() => {
@@ -1359,7 +1378,7 @@ export default function App() {
                   } else if (item.id === 'outfits') {
                     setShowOutfitModal(true);
                   } else if (item.id === 'games') {
-                    setShowLiarDiceModal(true);
+                    setShowDiceGame(true);
                   } else {
                     showToast(`即将开启 ${item.label} 功能`);
                   }
@@ -1607,26 +1626,13 @@ export default function App() {
                 <p className="text-xs text-white/40 mt-0.5">随时与心动角色私聊或多角群聊碰撞</p>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center">
                 <button
                   onClick={() => setShowCreateGroupModal(true)}
                   className="flex items-center gap-1.5 text-xs text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 px-3 py-1.5 rounded-full font-extrabold shadow-md shadow-purple-500/20 transition active:scale-95 cursor-pointer"
                 >
                   <Plus size={14} />
                   <span>发起群聊</span>
-                </button>
-
-                <button
-                  onClick={messagesSubTab === 'private' ? markAllConversationsAsRead : markAllGroupChatsAsRead}
-                  disabled={messagesSubTab === 'private' ? totalPrivateUnread === 0 : totalGroupUnread === 0}
-                  className={`flex items-center gap-1 text-[11px] px-2.5 py-1.5 rounded-full border transition active:scale-95 cursor-pointer ${
-                    (messagesSubTab === 'private' ? totalPrivateUnread > 0 : totalGroupUnread > 0)
-                      ? 'text-purple-300 bg-purple-500/15 hover:bg-purple-500/25 border-purple-500/30'
-                      : 'text-white/30 bg-white/[0.02] border-white/5 opacity-40 cursor-not-allowed pointer-events-none'
-                  }`}
-                >
-                  <CheckCheck size={13} />
-                  <span>已读</span>
                 </button>
               </div>
             </div>
@@ -1987,6 +1993,25 @@ export default function App() {
               <div className="flex items-center gap-1.5 text-white/40 text-xs">
                 <span className="px-2 py-0.5 rounded-full bg-pink-500/15 text-pink-300 text-[9px] font-extrabold border border-pink-500/10">
                   {followedRoles.length}
+                </span>
+                <ChevronRight size={13} className="text-white/25" />
+              </div>
+            </div>
+
+            {/* 我的收藏 */}
+            <div
+              onClick={() => setCurrentPage('favorites')}
+              className="flex items-center justify-between py-2.5 px-3.5 hover:bg-white/[0.02] cursor-pointer transition"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-7.5 h-7.5 rounded-lg bg-gradient-to-tr from-purple-500/15 to-indigo-500/5 text-purple-400 border border-purple-500/10 flex items-center justify-center shrink-0 shadow-sm shadow-purple-500/5">
+                  <Star size={13} className="fill-purple-400/10" />
+                </div>
+                <span className="text-xs font-bold text-white/90">我的收藏</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-white/40 text-xs">
+                <span className="px-2 py-0.5 rounded-full bg-purple-500/15 text-purple-300 text-[9px] font-extrabold border border-purple-500/10">
+                  {Object.values(theaterFavorites).filter(Boolean).length}
                 </span>
                 <ChevronRight size={13} className="text-white/25" />
               </div>
@@ -2629,6 +2654,19 @@ export default function App() {
         />
       )}
 
+      {/* 13. SUB-PAGE: FAVORITES */}
+      {currentPage === 'favorites' && (
+        <FavoritesView 
+          theaterFavorites={theaterFavorites}
+          onBack={() => setCurrentPage('profile')}
+          onToggleFavorite={toggleTheaterFavorite}
+          onPlayTheater={(th) => {
+            setSelectedTheaterToPlay(th);
+            setShowTheaterModal(true);
+          }}
+        />
+      )}
+
       {/* 13. CHAT VIEW */}
       {currentPage === 'chat' && activeRole && (
         <ChatView
@@ -2773,6 +2811,8 @@ export default function App() {
           }));
           return true;
         }}
+        theaterFavorites={theaterFavorites}
+        onToggleTheaterFavorite={toggleTheaterFavorite}
       />
 
       <RechargeModal
@@ -3031,9 +3071,15 @@ export default function App() {
 
       <TheaterHomepageModal
         isOpen={showTheaterModal}
-        onClose={() => setShowTheaterModal(false)}
+        onClose={() => {
+          setShowTheaterModal(false);
+          setSelectedTheaterToPlay(null);
+        }}
         onShowToast={showToast}
         userProfile={userProfile}
+        theaterFavorites={theaterFavorites}
+        onToggleFavorite={toggleTheaterFavorite}
+        initialTheater={selectedTheaterToPlay}
       />
 
       <OutfitModal
@@ -3043,11 +3089,11 @@ export default function App() {
         onShowToast={showToast}
       />
 
-      <LiarDiceGameModal
-        isOpen={showLiarDiceModal}
-        onClose={() => setShowLiarDiceModal(false)}
-        userProfile={userProfile}
+      <LiarDiceGame 
+        isOpen={showDiceGame}
         roles={roles}
+        onClose={() => setShowDiceGame(false)}
+        onShowToast={showToast}
       />
     </PhoneFrame>
   );

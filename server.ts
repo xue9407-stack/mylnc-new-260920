@@ -629,7 +629,7 @@ app.post("/api/v1/chat/send", async (req, res) => {
   if (ai) {
     try {
       const response = await ai.models.generateContent({
-        model: "gemini-3.8-flash",
+        model: "gemini-1.5-flash",
         contents: content,
         config: {
           systemInstruction: `你正在一个角色扮演聊天APP中扮演角色"${role.name}"（头衔：${role.title}）。
@@ -829,7 +829,7 @@ app.post("/api/v1/tools/assist", async (req, res) => {
       }
 
       const response = await ai.models.generateContent({
-        model: "gemini-3.8-flash",
+        model: "gemini-1.5-flash",
         contents: prompt,
         config: {
           systemInstruction: sysInstruction,

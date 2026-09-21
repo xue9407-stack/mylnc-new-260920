@@ -24,6 +24,9 @@ interface TheaterHomepageModalProps {
     nickname: string;
     avatar: string;
   };
+  theaterFavorites: Record<string, boolean>;
+  onToggleFavorite: (id: string) => void;
+  initialTheater?: any;
 }
 
 interface DynamicTheater {
@@ -169,16 +172,38 @@ export const TheaterHomepageModal: React.FC<TheaterHomepageModalProps> = ({
   onClose,
   onShowToast,
   userProfile,
+  theaterFavorites,
+  onToggleFavorite,
+  initialTheater,
 }) => {
   const [selectedTheater, setSelectedTheater] = useState<DynamicTheater | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [favorites, setFavorites] = useState<Record<string, boolean>>({});
+
+  React.useEffect(() => {
+    if (isOpen && initialTheater) {
+      const mappedTheater: DynamicTheater = {
+        id: initialTheater.id,
+        title: initialTheater.title,
+        desc: initialTheater.desc,
+        bgImage: initialTheater.bgImage,
+        roleName: initialTheater.speaker || initialTheater.roleName || '陆景琛',
+        scenes: initialTheater.scenes || []
+      };
+      setSelectedTheater(mappedTheater);
+      setIsPlaying(true);
+      setActiveSceneIndex(0);
+      setCustomSceneId('start');
+      setIntimacyScore(0);
+      setInteractionStep('narration');
+    }
+  }, [isOpen, initialTheater]);
   
   // Active Scene Playing States
   const [activeSceneIndex, setActiveSceneIndex] = useState(0);
   const [customSceneId, setCustomSceneId] = useState('start');
   const [intimacyScore, setIntimacyScore] = useState(0);
   const [interactionStep, setInteractionStep] = useState<'narration' | 'dialogue' | 'choices'>('narration');
+  const [choiceDrivenBg, setChoiceDrivenBg] = useState<string | null>(null);
 
   const getSpeakerAvatar = (speaker?: string, sceneAvatar?: string, theaterRoleName?: string) => {
     if (sceneAvatar) return sceneAvatar;
@@ -278,8 +303,8 @@ export const TheaterHomepageModal: React.FC<TheaterHomepageModalProps> = ({
   };
 
   const handleFavoriteToggle = (id: string) => {
-    const isFav = !favorites[id];
-    setFavorites(prev => ({ ...prev, [id]: isFav }));
+    onToggleFavorite(id);
+    const isFav = !theaterFavorites[id];
     onShowToast(isFav ? '❤️ 已加入私人剧场收藏夹' : '💔 已从收藏夹中移除');
   };
 
@@ -290,12 +315,18 @@ export const TheaterHomepageModal: React.FC<TheaterHomepageModalProps> = ({
     setCustomSceneId('start');
     setIntimacyScore(0);
     setInteractionStep('narration');
+    setChoiceDrivenBg(null);
     onShowToast(`🎬 正在加载：${theater.title}`);
   };
 
   // Dialogue selection action
   const handleNextStep = (choiceText: string, nextId?: string, intimacyGain: number = 10, toastMsg?: string) => {
     playBeep();
+
+    // Choice driven background update
+    const choiceBg = resolveTheaterBg(choiceText, undefined, true);
+    if (choiceBg) setChoiceDrivenBg(choiceBg);
+
     if (toastMsg) {
       onShowToast(toastMsg);
     } else {
@@ -383,7 +414,7 @@ export const TheaterHomepageModal: React.FC<TheaterHomepageModalProps> = ({
                         <span className="text-[9px] bg-purple-500 text-white font-black px-1.5 py-0.5 rounded uppercase">
                           {th.roleName}
                         </span>
-                        {favorites[th.id] && <Star size={12} className="text-rose-400 fill-current animate-pulse" />}
+                        {theaterFavorites[th.id] && <Star size={12} className="text-rose-400 fill-current animate-pulse" />}
                       </div>
                       <h4 className="text-sm font-black text-white drop-shadow-md group-hover:text-purple-300 transition-colors">
                         {th.title}
@@ -456,13 +487,13 @@ export const TheaterHomepageModal: React.FC<TheaterHomepageModalProps> = ({
                   <button
                     onClick={() => handleFavoriteToggle(selectedTheater.id)}
                     className={`py-3 px-6 rounded-xl flex items-center justify-center gap-1.5 font-bold text-xs border backdrop-blur-md active:scale-95 transition cursor-pointer ${
-                      favorites[selectedTheater.id]
+                      theaterFavorites[selectedTheater.id]
                         ? 'bg-rose-500/20 border-rose-500/40 text-rose-300'
                         : 'bg-white/10 hover:bg-white/15 border-white/10 text-white/90'
                     }`}
                   >
-                    {favorites[selectedTheater.id] ? <Check size={14} /> : <Bookmark size={14} />}
-                    <span>{favorites[selectedTheater.id] ? '已收藏' : '收藏'}</span>
+                    {theaterFavorites[selectedTheater.id] ? <Check size={14} /> : <Bookmark size={14} />}
+                    <span>{theaterFavorites[selectedTheater.id] ? '已收藏' : '收藏'}</span>
                   </button>
 
                   {/* 进入 */}
@@ -506,7 +537,7 @@ export const TheaterHomepageModal: React.FC<TheaterHomepageModalProps> = ({
                   }
                 }
 
-                const bgToUse = resolveTheaterBg(selectedTheater.title, selectedTheater.bgImage);
+                const bgToUse = choiceDrivenBg || resolveTheaterBg(selectedTheater.title, selectedTheater.bgImage);
 
                 const activeScene = selectedTheater.id === 'theater_school_bully'
                   ? (BULLY_SCENES.find(s => s.id === customSceneId) || BULLY_SCENES[0])
@@ -598,6 +629,7 @@ export const TheaterHomepageModal: React.FC<TheaterHomepageModalProps> = ({
                           setCustomSceneId('start');
                           setActiveSceneIndex(0);
                           setInteractionStep('narration');
+                          setChoiceDrivenBg(null);
                           onShowToast('↺ 剧情已重置到章节开头');
                         }}
                         className="w-10 h-10 rounded-full bg-[#e2d5cb]/25 hover:bg-[#e2d5cb]/40 border border-[#e2d5cb]/30 backdrop-blur-md flex items-center justify-center text-[#f3ece7] shadow-lg transition active:scale-90 cursor-pointer"
@@ -623,6 +655,7 @@ export const TheaterHomepageModal: React.FC<TheaterHomepageModalProps> = ({
                         onClick={() => {
                           playBeep();
                           setInteractionStep('dialogue');
+                          setChoiceDrivenBg(null);
                         }}
                         className="relative z-20 flex-1 flex flex-col justify-end px-6 pb-10 cursor-pointer select-none group animate-fadeIn"
                       >
@@ -646,6 +679,7 @@ export const TheaterHomepageModal: React.FC<TheaterHomepageModalProps> = ({
                         onClick={() => {
                           playBeep();
                           setInteractionStep('choices');
+                          setChoiceDrivenBg(null);
                         }}
                         className="relative z-20 flex-1 flex flex-col justify-end px-4 pb-8 cursor-pointer select-none animate-fadeIn"
                       >

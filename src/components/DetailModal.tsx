@@ -59,6 +59,8 @@ interface DetailModalProps {
   onOpenRecharge?: () => void;
   onDeductMoney?: (amount: number) => boolean;
   initialTab?: 'about' | 'story' | 'theater';
+  theaterFavorites: Record<string, boolean>;
+  onToggleTheaterFavorite: (id: string) => void;
 }
 
 export const DetailModal: React.FC<DetailModalProps> = ({
@@ -84,6 +86,8 @@ export const DetailModal: React.FC<DetailModalProps> = ({
   onOpenRecharge,
   onDeductMoney,
   initialTab = 'about',
+  theaterFavorites,
+  onToggleTheaterFavorite,
 }) => {
   const [activeTab, setActiveTab] = useState<'about' | 'story' | 'theater'>(initialTab);
   const [showFullPortrait, setShowFullPortrait] = useState(false);
@@ -795,6 +799,8 @@ export const DetailModal: React.FC<DetailModalProps> = ({
         onClose={() => setActiveTheater(null)}
         onShowToast={onShowToast}
         onStartChat={onStartChat}
+        theaterFavorites={theaterFavorites}
+        onToggleFavorite={onToggleTheaterFavorite}
       />
 
       {/* Theater Create Modal */}

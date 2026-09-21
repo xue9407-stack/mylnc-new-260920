@@ -77,6 +77,19 @@ const OUTFIT_SUITS: OutfitSuit[] = [
     ]
   },
   {
+    id: 'uniform',
+    name: '职业制服・王牌气场',
+    slogan: '👔 极简高奢定制正装',
+    desc: '挺括修身意式剪裁西装外套、骨干立领免烫衬衫，展露从容不迫的职业风骨',
+    emoji: '👔',
+    cost: 260,
+    colorThemes: [
+      { name: '冷酷墨竹黑', color: '#111827', tint: 'rgba(17,24,39,0.22)' },
+      { name: '深海幽邃蓝', color: '#1e3a8a', tint: 'rgba(30,58,138,0.22)' },
+      { name: '琥珀焦糖棕', color: '#78350f', tint: 'rgba(120,53,15,0.22)' }
+    ]
+  },
+  {
     id: 'sporty',
     name: '运动风・活力狂潮',
     slogan: '👟 潮酷拼接运动装',
@@ -100,19 +113,6 @@ const OUTFIT_SUITS: OutfitSuit[] = [
       { name: '燕麦软糯奶', color: '#d97706', tint: 'rgba(217,119,6,0.15)' },
       { name: '樱花香蒲粉', color: '#ec4899', tint: 'rgba(236,72,153,0.15)' },
       { name: '清茶极简灰', color: '#9ca3af', tint: 'rgba(156,163,175,0.15)' }
-    ]
-  },
-  {
-    id: 'uniform',
-    name: '职业制服・王牌气场',
-    slogan: '👔 极简高奢定制正装',
-    desc: '挺括修身意式剪裁西装外套、骨干立领免烫衬衫，展露从容不迫的职业风骨',
-    emoji: '👔',
-    cost: 260,
-    colorThemes: [
-      { name: '冷酷墨竹黑', color: '#111827', tint: 'rgba(17,24,39,0.22)' },
-      { name: '深海幽邃蓝', color: '#1e3a8a', tint: 'rgba(30,58,138,0.22)' },
-      { name: '琥珀焦糖棕', color: '#78350f', tint: 'rgba(120,53,15,0.22)' }
     ]
   },
   {
@@ -148,7 +148,7 @@ export const OutfitModal: React.FC<OutfitModalProps> = ({
 
   const [userDiamonds, setUserDiamonds] = useState(4850);
   
-  // Equipped outfit state - Default is academy
+  // Equipped outfit state - Default is uniform
   const [activeOutfitId, setActiveOutfitId] = useState<string>('uniform');
   const [selectedColorIdx, setSelectedColorIdx] = useState<number>(0);
 
@@ -188,8 +188,12 @@ export const OutfitModal: React.FC<OutfitModalProps> = ({
     }
 
     // Default/Anime/CG matching: Curate highly optimized images that match the role and selected suit theme
+    // When uniform (极简高奢定制正装) is selected, return the gorgeous original initial/original HD portrait!
+    if (outfitId === 'uniform') {
+      return ROLE_MEDIA_MAP[roleId]?.portraitUrl || ROLE_MEDIA_MAP[roleId]?.avatarUrl || imgLuJingchenAlt;
+    }
+
     if (roleId === 'lujingchen') {
-      if (outfitId === 'uniform') return imgLuJingchenUniform; // Signature tailored Italian double-breasted charcoal business suit
       if (outfitId === 'sporty') return imgLuJingchenSporty; // Modern silver hair color-blocked windbreaker sporty outfit
       if (outfitId === 'academy') return imgLuJingchenAcademy; // Classic British navy insignia academy blazer coat
       if (outfitId === 'home') return imgLuJingchenHome; // Warm oversized cozy cream cable-knit knitwear
@@ -306,7 +310,7 @@ export const OutfitModal: React.FC<OutfitModalProps> = ({
     setActiveOutfitId('uniform');
     setSelectedColorIdx(0);
     logStateChange('uniform', 0);
-    onShowToast('🧹 已重置为默认职业制服形象');
+    onShowToast('🧹 已重置为初始原画形象');
   };
 
   const handleSaveAndApply = () => {
