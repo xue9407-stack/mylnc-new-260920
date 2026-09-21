@@ -39,6 +39,7 @@ import { IntimacyModal } from './IntimacyModal';
 import { ROLE_MEDIA_MAP } from '../data/rolePortraits';
 import { ROLE_AI_TOOLS, isRoleUnlocked, unlockRoleToolkit, RoleToolInfo } from '../utils/roleUnlock';
 import { getRoleStorylines, saveRoleStoryline, getRoleTheaters, saveRoleTheater } from '../data/storyTheaterPresetData';
+import { resolveTheaterBg } from '../utils/theaterHelper';
 import { StoryReaderModal } from './StoryReaderModal';
 import { StoryCreateModal } from './StoryCreateModal';
 import { TheaterPlayerModal } from './TheaterPlayerModal';
@@ -108,7 +109,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({
     if (role) {
       setIsUnlocked(isRoleUnlocked(role.id));
       setStorylines(getRoleStorylines(role.id));
-      setTheaters(getRoleTheaters(role.id));
+      setTheaters(getRoleTheaters(role.id, role.name));
     }
   }, [role?.id]);
 
@@ -561,7 +562,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({
                 >
                   <div className="w-20 h-16 rounded-lg overflow-hidden shrink-0 relative bg-black/40 border border-white/10">
                     <img
-                      src={th.bgImage}
+                      src={resolveTheaterBg(th.title, th.bgImage)}
                       alt={th.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                     />

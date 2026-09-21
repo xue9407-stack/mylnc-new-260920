@@ -20,6 +20,7 @@ import { VipView } from './components/VipView';
 import { EditProfileModal } from './components/EditProfileModal';
 import { OutfitModal } from './components/OutfitModal';
 import { LiarDiceGameModal } from './components/LiarDiceGameModal';
+import { TheaterHomepageModal } from './components/TheaterHomepageModal';
 import { loadAllIntimacies, saveIntimacy, getIntimacyData, addDailyChatIntimacy, AddChatIntimacyResult } from './utils/intimacy';
 import { ROLE_MEDIA_MAP } from './data/rolePortraits';
 import { DEFAULT_ROLES } from './data/rolesData';
@@ -3028,41 +3029,12 @@ export default function App() {
         </div>
       )}
 
-      {showTheaterModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn" onClick={() => setShowTheaterModal(false)}>
-          <div className="bg-[#1a1a24] border border-white/10 rounded-3xl w-full max-w-sm p-6 shadow-2xl max-h-[80vh] flex flex-col" onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between mb-6 shrink-0">
-              <h3 className="text-lg font-bold text-white">AI 剧场</h3>
-              <button onClick={() => setShowTheaterModal(false)} className="text-white/50 hover:text-white"><X size={20} /></button>
-            </div>
-            <div className="space-y-4 overflow-y-auto pr-1 no-scrollbar flex-1">
-              {Object.entries(DEFAULT_THEATERS).map(([roleId, theaters]) => {
-                const role = roles.find(r => r.id === roleId);
-                return theaters.map(th => (
-                  <div key={th.id} className="p-3 rounded-xl bg-white/[0.03] border border-white/5 hover:bg-white/[0.08] transition">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-[10px] text-purple-300 bg-purple-500/10 px-1.5 py-0.5 rounded font-bold">
-                        {role?.name || '未知角色'}
-                      </span>
-                      <h4 className="text-xs font-bold text-white">{th.title}</h4>
-                    </div>
-                    <p className="text-[10px] text-white/50 mb-3">{th.desc}</p>
-                    <button 
-                      onClick={() => {
-                        setShowTheaterModal(false);
-                        showToast(`进入剧场：${th.title}`);
-                      }}
-                      className="w-full py-2 rounded-lg bg-purple-600/20 text-purple-200 text-xs font-bold hover:bg-purple-600/40 transition"
-                    >
-                      进入剧场
-                    </button>
-                  </div>
-                ));
-              })}
-            </div>
-          </div>
-        </div>
-      )}
+      <TheaterHomepageModal
+        isOpen={showTheaterModal}
+        onClose={() => setShowTheaterModal(false)}
+        onShowToast={showToast}
+        userProfile={userProfile}
+      />
 
       <OutfitModal
         isOpen={showOutfitModal}

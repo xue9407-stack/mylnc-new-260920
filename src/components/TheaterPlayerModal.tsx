@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Sparkles, Volume2, RotateCcw, Music, Menu, Heart, Play, BookOpen, Settings2, X, Diamond } from 'lucide-react';
+import { ArrowLeft, Sparkles, Volume2, RotateCcw, Music, Menu, Heart, Play, BookOpen, Settings2, X, Diamond, Phone, Video, Mic, ChevronDown, ChevronRight } from 'lucide-react';
 import { MiniTheaterItem, Role, TheaterScene } from '../types';
 import { speakRoleDialogue } from '../utils/ttsHelper';
+import { ArtisticTheaterTitle } from './ArtisticTheaterTitle';
+import { TransparentSprite } from './TransparentSprite';
+import imgAnimeBully from '../assets/images/anime_sprite_bully_1789953827113.jpg';
+import imgAnimeCgBullyMansion from '../assets/images/anime_cg_bully_mansion_1789954051013.jpg';
+import { ROLE_MEDIA_MAP } from '../data/rolePortraits';
+import { resolveTheaterBg, resolveNarrationText, resolveSceneChoices, formatChapterBadge } from '../utils/theaterHelper';
 
 interface TheaterPlayerModalProps {
   isOpen: boolean;
@@ -31,6 +37,7 @@ export const TheaterPlayerModal: React.FC<TheaterPlayerModalProps> = ({
   const [currentSceneIdx, setCurrentSceneIdx] = useState(0);
   const [isPlayingVoice, setIsPlayingVoice] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
+  const [interactionStep, setInteractionStep] = useState<'narration' | 'dialogue' | 'choices'>('narration');
 
   // Advanced menu modals
   const [showCatalogModal, setShowCatalogModal] = useState(false);
@@ -39,7 +46,7 @@ export const TheaterPlayerModal: React.FC<TheaterPlayerModalProps> = ({
 
   // Customizable settings that drive the content
   const [aiTone, setAiTone] = useState<'gentle' | 'tsundere' | 'possessive'>('gentle');
-  const [selectedWeather, setSelectedWeather] = useState<'rainy' | 'starry' | 'dawn' | 'cozy'>('starry');
+  const [selectedWeather, setSelectedWeather] = useState<'rainy' | 'starry' | 'dawn' | 'cozy' | null>(null);
   const [customDialogueHistory, setCustomDialogueHistory] = useState<TheaterScene[]>([]);
 
   useEffect(() => {
@@ -47,6 +54,7 @@ export const TheaterPlayerModal: React.FC<TheaterPlayerModalProps> = ({
     setCurrentSceneIdx(0);
     setIsPlayingVoice(false);
     setCustomDialogueHistory([]);
+    setInteractionStep('narration');
   }, [theater?.id]);
 
   if (!isOpen || !theater) return null;
@@ -56,32 +64,38 @@ export const TheaterPlayerModal: React.FC<TheaterPlayerModalProps> = ({
     {
       id: 'default_s1',
       speaker: role.name,
-      dialogue: `（微微摇晃着手中的红酒杯，眼神里藏着几分不易察觉的温柔）工作遇到烦心事了？跟我说说呗，哥可是很会开导人的。`,
+      narrationText: `深色木质书房里只有一盏绿荫台灯散发着幽微的光芒，窗外淅淅沥沥的雨声打破了深夜的沉寂。${role.name}停下手中的工作，眼神深沉地凝视着推门而入的你……`,
+      dialogue: `（放下手中的签字笔，解开两颗领口扣子，眼神深沉地看向你） “深夜跑进我的私人书房，是公事没汇报完，还是单纯想我了？”`,
     },
     {
       id: 'default_s2',
       speaker: role.name,
-      dialogue: `（指尖轻轻划过阳台栏杆，夜风将你凌乱的发丝吹拂到他脸上）傻瓜，有我在呢。今晚不谈公事，我们只对月小酌，把一切不愉快都倒进这杯酒里。`,
+      narrationText: `琥珀色的红酒在水晶杯壁上划过优雅的弧线，夜风掀起半透明的纱帘，将两人的距离拉得极近。空气中弥漫着淡雅沉稳的木质雪松香气。`,
+      dialogue: `（微微摇晃着手中的红酒杯，眼神里藏着几分不易察觉的温柔） “工作遇到烦心事了？跟我说说呗，哥可是很会开导人的。”`,
     },
     {
       id: 'default_s3',
       speaker: role.name,
-      dialogue: `（他将外套解下，轻轻披在你的肩头，动作带着不容置疑的霸道）夜里风凉，要是冻坏了，我可是会心疼的。`,
+      narrationText: `顶楼阳台的夜风带着几分凉意，远处的都市霓虹在水汽中模糊成斑斓的光晕。他脱下身上带有体温的黑色大衣，轻柔地搭在你的肩头。`,
+      dialogue: `（他将外套解下，轻轻披在你的肩头，动作带着不容置疑的霸道） “夜里风凉，要是冻坏了，我可是会心疼的。”`,
     },
     {
       id: 'default_s4',
       speaker: role.name,
-      dialogue: `（俊朗的脸庞在朦胧的月光下显得格外深邃，他忽然定定地看着你）其实……我一直想问你一件事，你真的甘心只当我的“合伙人”吗？`,
+      narrationText: `月光倒映在他深邃的眼眸里，像是落入了整片星海。周围的一切嘈杂声仿佛都随之退去，只剩下彼此起伏的呼吸声。`,
+      dialogue: `（俊朗的脸庞在朦胧的月光下显得格外深邃，他忽然定定地看着你） “其实……我一直想问你一件事，你真的甘心只当我的‘合伙人’吗？”`,
     },
     {
       id: 'default_s5',
       speaker: role.name,
-      dialogue: `（他微微低下头，温热的呼吸扑在你的耳畔，心跳声在寂静的夜里格外清晰）前世我错过了你，今生今世，我绝对不会再放手。`,
+      narrationText: `他向前跨出半步，将你笼罩在他的影子与怀抱之中。温热的呼吸拂过耳际，强有力的心跳声在寂静的夜里格外清晰。`,
+      dialogue: `（他微微低下头，温热的呼吸扑在你的耳畔） “前世我错过了你，今生今世，我绝对不会再放手。”`,
     },
     {
       id: 'default_s6',
       speaker: role.name,
-      dialogue: `（紧紧拥你入怀，像是要把你揉进他的生命里）这一生，执子之手，与子偕老。你是我唯一的星光，也是我心之所向。`,
+      narrationText: `夜色渐深，繁星点点。他紧紧将你按在胸口，这一刻，宿命的羁绊在彼此相拥的体温中彻底定格。`,
+      dialogue: `（紧紧拥你入怀，像是要把你揉进他的生命里） “这一生，执子之手，与子偕老。你是我唯一的星光，也是我心之所向。”`,
     }
   ];
 
@@ -89,8 +103,8 @@ export const TheaterPlayerModal: React.FC<TheaterPlayerModalProps> = ({
   const allScenes = [...baseScenes, ...customDialogueHistory];
   const currentScene = allScenes[currentSceneIdx] || allScenes[0];
 
-  // Dynamic Background Image driven by AI Weather settings
-  const activeBg = WEATHER_BACKGROUNDS[selectedWeather] || theater.bgImage || role.coverUrl;
+  // Dynamic Background Image driven by title and AI Weather settings
+  const activeBg = (selectedWeather ? WEATHER_BACKGROUNDS[selectedWeather] : null) || resolveTheaterBg(theater.title, theater.bgImage);
 
   const handleNextScene = () => {
     if (currentSceneIdx < allScenes.length - 1) {
@@ -154,20 +168,20 @@ export const TheaterPlayerModal: React.FC<TheaterPlayerModalProps> = ({
           <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-black/60" />
         </div>
 
-        {/* Top Header Bar */}
-        <div className="relative z-20 pt-4 px-4 pb-2 flex items-center justify-between shrink-0">
+        {/* Top Header Bar (Exact match for Image 2) */}
+        <div className="relative z-30 pt-4 px-4 pb-2 flex items-center justify-between shrink-0">
           <button
             type="button"
-            onClick={onClose}
-            className="w-9 h-9 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/90 transition active:scale-95 cursor-pointer"
+            onClick={stage === 'reader' ? () => setStage('cover') : onClose}
+            className="w-9 h-9 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/90 transition active:scale-95 cursor-pointer shadow-md"
             aria-label="返回"
           >
             <ArrowLeft size={18} />
           </button>
 
-          <h1 className="text-xs font-extrabold text-white tracking-wide truncate max-w-[260px]">
-            {theater.title}
-          </h1>
+          <h2 className="text-sm sm:text-base font-bold text-white tracking-wide truncate max-w-[200px] text-center drop-shadow-md">
+            {theater.title.replace(/[《》]/g, '')}
+          </h2>
 
           <div className="w-9" />
         </div>
@@ -175,18 +189,14 @@ export const TheaterPlayerModal: React.FC<TheaterPlayerModalProps> = ({
         {stage === 'cover' ? (
           /* ================= PHASE 1: COVER / ENTRY SCREEN ================= */
           <div className="flex-1 flex flex-col justify-between p-6 relative z-20 text-center">
-            <div className="space-y-4 pt-12">
-              <div className="inline-block px-4 py-1.5 rounded-full bg-black/50 backdrop-blur-md border border-white/15 text-[11px] font-semibold text-white/80">
-                互动影音剧场 · 官方认证
-              </div>
+            <div className="flex-1 flex flex-col justify-center items-center text-center px-2 z-10 my-auto">
+              <ArtisticTheaterTitle title={theater.title} />
 
-              <h2 className="text-3xl font-black text-white tracking-wider drop-shadow-lg leading-tight">
-                {theater.title}
-              </h2>
-
-              <p className="text-xs text-white/70 max-w-[280px] mx-auto font-light leading-relaxed">
-                {theater.desc || '在这繁华都市的浩瀚星空下，寻找只属于你们两个人的温存与即兴浪漫。'}
-              </p>
+              {theater.id === 'theater_school_bully' && (
+                <p className="mt-2 text-[10px] text-white/90 drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)] font-bold tracking-[0.1em] max-w-[280px] mx-auto bg-black/30 py-1.5 px-3 rounded-full border border-white/5 backdrop-blur-xs">
+                  前世他害我惨死，今生我嫁给他弟。
+                </p>
+              )}
             </div>
 
             {/* Bottom Actions: 收藏 & 进入 */}
@@ -224,28 +234,28 @@ export const TheaterPlayerModal: React.FC<TheaterPlayerModalProps> = ({
             </div>
           </div>
         ) : (
-          /* ================= PHASE 2: READER SCREEN ================= */
+          /* ================= PHASE 2: READER SCREEN (3-STAGE SEQUENTIAL INTERACTION: NARRATION -> DIALOGUE -> CHOICES) ================= */
           <>
             {/* Right-Hand Vertical Action Toolbar */}
-            <div className="absolute right-4 top-20 z-30 flex flex-col items-center gap-3">
+            <div className="absolute right-3.5 top-20 z-30 flex flex-col items-center gap-2.5">
               {/* Catalog Button */}
               <button
                 type="button"
                 onClick={() => setShowCatalogModal(true)}
-                className="w-11 h-11 rounded-full bg-[#2a2636]/80 hover:bg-[#352f45] backdrop-blur-md border border-white/15 flex items-center justify-center text-white/90 shadow-lg transition active:scale-90 cursor-pointer"
+                className="w-10 h-10 rounded-full bg-[#e2d5cb]/25 hover:bg-[#e2d5cb]/40 border border-[#e2d5cb]/30 backdrop-blur-md flex items-center justify-center text-[#f3ece7] font-bold text-xs shadow-lg transition active:scale-90 cursor-pointer"
                 title="剧场章节目录"
               >
-                <Menu size={18} />
+                目
               </button>
 
               {/* AI Settings Button */}
               <button
                 type="button"
                 onClick={() => setShowSettingsModal(true)}
-                className="w-11 h-11 rounded-full bg-[#2a2636]/80 hover:bg-[#352f45] backdrop-blur-md border border-white/15 flex items-center justify-center text-amber-300 shadow-lg transition active:scale-90 cursor-pointer"
+                className="w-10 h-10 rounded-full bg-[#e2d5cb]/25 hover:bg-[#e2d5cb]/40 border border-[#e2d5cb]/30 backdrop-blur-md flex items-center justify-center text-[#f3ece7] font-bold shadow-lg transition active:scale-90 cursor-pointer"
                 title="AI 导演设置"
               >
-                <Sparkles size={18} />
+                ✦
               </button>
 
               {/* Replay Button */}
@@ -254,12 +264,13 @@ export const TheaterPlayerModal: React.FC<TheaterPlayerModalProps> = ({
                 onClick={() => {
                   setCurrentSceneIdx(0);
                   setCustomDialogueHistory([]);
-                  onShowToast('🔄 章节已重置到初始状态');
+                  setInteractionStep('narration');
+                  onShowToast('↺ 章节已重置到初始状态');
                 }}
-                className="w-11 h-11 rounded-full bg-[#2a2636]/80 hover:bg-[#352f45] backdrop-blur-md border border-white/15 flex items-center justify-center text-white/90 shadow-lg transition active:scale-90 cursor-pointer"
+                className="w-10 h-10 rounded-full bg-[#e2d5cb]/25 hover:bg-[#e2d5cb]/40 border border-[#e2d5cb]/30 backdrop-blur-md flex items-center justify-center text-[#f3ece7] shadow-lg transition active:scale-90 cursor-pointer"
                 title="重新播放"
               >
-                <RotateCcw size={18} />
+                <RotateCcw size={16} />
               </button>
 
               {/* Audio Toggle Button */}
@@ -267,16 +278,12 @@ export const TheaterPlayerModal: React.FC<TheaterPlayerModalProps> = ({
                 type="button"
                 onClick={() => {
                   setIsMusicPlaying(!isMusicPlaying);
-                  onShowToast(isMusicPlaying ? '🔇 背景环境音效已暂停' : '🎵 已开启剧场微风星空沉浸环境音');
+                  onShowToast(isMusicPlaying ? '🔇 背景环境音效已暂停' : '♪ 已开启剧场微风星空沉浸环境音');
                 }}
-                className={`w-11 h-11 rounded-full backdrop-blur-md border flex items-center justify-center shadow-lg transition active:scale-90 cursor-pointer ${
-                  isMusicPlaying
-                    ? 'bg-purple-600/90 text-white border-purple-400'
-                    : 'bg-[#2a2636]/80 text-white/40 border-white/15'
-                }`}
+                className="w-10 h-10 rounded-full bg-[#e2d5cb]/25 hover:bg-[#e2d5cb]/40 border border-[#e2d5cb]/30 backdrop-blur-md flex items-center justify-center text-[#f3ece7] shadow-lg transition active:scale-90 cursor-pointer"
                 title="背景音效"
               >
-                <Music size={18} />
+                <Music size={16} />
               </button>
             </div>
 
@@ -284,42 +291,105 @@ export const TheaterPlayerModal: React.FC<TheaterPlayerModalProps> = ({
             <div className="relative z-20 flex justify-center pt-2 shrink-0">
               <div
                 onClick={() => setShowCatalogModal(true)}
-                className="px-5 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/15 text-xs font-medium text-white/80 tracking-wide shadow-md cursor-pointer hover:bg-black/80 transition"
+                className="px-5 py-1.5 rounded-full bg-[#e2d5cb]/20 border border-[#e2d5cb]/30 backdrop-blur-md text-xs font-bold text-[#f3ece7] tracking-wider shadow-lg hover:bg-[#e2d5cb]/35 cursor-pointer transition active:scale-95"
               >
-                第 {currentSceneIdx + 1} 章 · 书房外的名字
+                {formatChapterBadge(currentSceneIdx, currentScene.chapterTitle || theater.title)}
               </div>
             </div>
 
-            {/* Center & Bottom Dialogue Area */}
-            <div className="flex-1 flex flex-col justify-end p-4 pb-6 relative z-20">
-              
-              {/* Dialogue Box with Name Tag Floating on Top-Left */}
-              <div
-                onClick={handleNextScene}
-                className="relative pt-3 cursor-pointer group active:scale-[0.99] transition"
+            {/* ================= STAGE 1: NARRATION (EXACT MATCH FOR IMAGE 1) ================= */}
+            {interactionStep === 'narration' && (
+              <div 
+                onClick={() => setInteractionStep('dialogue')}
+                className="flex-1 flex flex-col justify-end px-6 pb-10 pt-24 relative z-20 cursor-pointer select-none animate-fadeIn"
               >
-                {/* Speaker Name Tag Pill */}
-                <div className="absolute -top-1 left-4 z-20 px-4 py-1.5 rounded-full bg-white text-slate-900 text-xs font-black shadow-lg border border-white/40 tracking-wider">
-                  {currentScene.speaker || role.name}
+                <p className="text-base sm:text-lg text-[#fdfbf7] font-normal leading-relaxed tracking-wide drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] drop-shadow-[0_0_12px_rgba(0,0,0,0.9)]">
+                  {resolveNarrationText(theater.title, currentScene.speaker || role.name, currentScene.dialogue, currentScene.narrationText)}
+                </p>
+
+                <div className="flex justify-end pt-3 text-white/50 text-[10px] items-center gap-1">
+                  <span className="animate-pulse">点击画面继续 ➔</span>
                 </div>
 
-                {/* Main Dialogue Box */}
-                <div className="p-5 pt-7 rounded-3xl bg-black/75 backdrop-blur-md border border-white/15 shadow-2xl relative">
-                  <p className="text-xs sm:text-sm text-white/95 leading-relaxed font-normal transition-all duration-300">
-                    {currentScene.dialogue}
-                  </p>
+                <div className="text-right pt-4">
+                  <span className="text-[9px] text-white/40 tracking-wider">内容由AI生成</span>
+                </div>
+              </div>
+            )}
 
-                  <div className="flex justify-end pt-3 text-white/40 text-[10px] tracking-wide flex items-center gap-1.5">
-                    <span className="animate-pulse">点击继续 ▼</span>
+            {/* ================= STAGE 2: DIALOGUE (EXACT MATCH FOR IMAGE 3) ================= */}
+            {interactionStep === 'dialogue' && (
+              <div 
+                onClick={() => setInteractionStep('choices')}
+                className="flex-1 flex flex-col justify-end px-4 pb-8 pt-24 relative z-20 cursor-pointer select-none animate-fadeIn"
+              >
+                {/* Male Main Lead Portrait Standee in Center */}
+                <div className="absolute inset-x-0 bottom-28 top-16 z-10 flex items-center justify-center pointer-events-none overflow-hidden">
+                  <TransparentSprite
+                    src={currentScene.roleAvatar || ROLE_MEDIA_MAP[role.id]?.portraitUrl || role.portraitUrl || role.avatarUrl || role.avatar || imgAnimeBully}
+                    alt={role.name || '立绘'}
+                    className="h-full max-h-[480px] object-contain drop-shadow-[0_15px_30px_rgba(0,0,0,0.8)]"
+                  />
+                </div>
+
+                {/* Dialogue Box Area */}
+                <div className="relative z-20 pt-3 group active:scale-[0.99] transition">
+                  {/* Speaker Badge */}
+                  <div className="absolute -top-2 left-4 z-30 px-4 py-1 rounded-2xl bg-white/95 text-slate-900 text-xs font-black shadow-lg border border-white/50 tracking-wider">
+                    {currentScene.speaker || role.name}
+                  </div>
+
+                  {/* Light Semi-transparent Card */}
+                  <div className="p-5 pt-6 rounded-3xl bg-[#f5f1eb]/90 backdrop-blur-md border border-white/80 shadow-2xl relative text-slate-800">
+                    <p className="text-sm sm:text-base text-[#1e1a24] font-medium leading-relaxed tracking-wide">
+                      {currentScene.dialogue || '你终于来了，以为躲着我就能当作一切没发生过么？'}
+                    </p>
+
+                    <div className="flex justify-end pt-2">
+                      <div className="inline-flex items-center gap-1 text-[11px] font-bold text-slate-500 bg-slate-900/5 px-2.5 py-1 rounded-full border border-slate-900/10 shadow-xs">
+                        <span>点击画面继续</span>
+                        <ChevronDown size={13} className="animate-bounce text-slate-600" />
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Bottom Watermark */}
-              <div className="text-right pt-3">
-                <span className="text-[9px] text-white/40 tracking-wider">内容由AI生成</span>
+                <div className="text-right pt-3">
+                  <span className="text-[9px] text-white/40 tracking-wider">内容由AI生成</span>
+                </div>
               </div>
-            </div>
+            )}
+
+            {/* ================= STAGE 3: CHOICES (EXACT MATCH FOR IMAGE 3) ================= */}
+            {interactionStep === 'choices' && (
+              <div className="flex-1 flex flex-col justify-end px-5 pb-8 relative z-20 space-y-4 select-none animate-fadeIn">
+                {/* Option Prompt Banner */}
+                <div className="w-full text-center py-3 px-6 rounded-2xl bg-[#e2d5cb]/30 border border-[#e2d5cb]/40 backdrop-blur-md text-[#f3ece7] text-sm font-bold shadow-lg">
+                  这一刻，你可以——
+                </div>
+
+                {/* Interactive Choice Options */}
+                <div className="space-y-3">
+                  {resolveSceneChoices(currentScene.choices, role.name).map((opt, i) => (
+                    <button
+                      key={i}
+                      onClick={() => {
+                        onShowToast(opt.toastMsg || `选择：${opt.text}`);
+                        handleNextScene();
+                        setInteractionStep('narration');
+                      }}
+                      className="w-full text-left p-4 rounded-2xl bg-[#e2d5cb]/20 hover:bg-[#e2d5cb]/35 border border-[#e2d5cb]/30 text-[#f3ece7] font-bold text-xs sm:text-sm transition active:scale-98 shadow-xl backdrop-blur-md cursor-pointer"
+                    >
+                      <span>{opt.text}</span>
+                    </button>
+                  ))}
+                </div>
+
+                <div className="text-right pt-2">
+                  <span className="text-[9px] text-white/40 tracking-wider">内容由AI生成</span>
+                </div>
+              </div>
+            )}
           </>
         )}
 

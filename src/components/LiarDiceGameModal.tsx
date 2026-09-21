@@ -12,6 +12,8 @@ interface LiarDiceGameModalProps {
   roles: any[];
 }
 
+import imgAnimeBully from '../assets/images/anime_male_bully_1789953557674.jpg';
+
 export const LiarDiceGameModal: React.FC<LiarDiceGameModalProps> = ({
   isOpen,
   onClose,
@@ -22,8 +24,8 @@ export const LiarDiceGameModal: React.FC<LiarDiceGameModalProps> = ({
   const defaultOpponent = {
     id: 'lingye',
     name: 'AI 凌夜',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400',
-    portrait: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=600',
+    avatar: imgAnimeBully,
+    portrait: imgAnimeBully,
     score: 98,
   };
 
